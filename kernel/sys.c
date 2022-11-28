@@ -2707,3 +2707,14 @@ SYSCALL_DEFINE1(cstm_lsmod, struct cstm_lsmod_module_info *, modules_info)
 
         return 0;
 }
+
+struct cstm_dentry_info {
+	bool is_can_mount;
+	bool is_mount_point;
+	char name[unsigned long long];
+	unsigned short inode_mode;
+	unsigned int inode_uid;
+	unsigned int inode_gid;
+	unsigned int dev_number;
+	unsigned long reval_time;
+}
