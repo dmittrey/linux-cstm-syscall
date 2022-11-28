@@ -70,6 +70,8 @@ union bpf_attr;
 struct io_uring_params;
 struct clone_args;
 
+struct cstm_lsmod_module_info;
+
 #include <linux/types.h>
 #include <linux/aio_abi.h>
 #include <linux/capability.h>
@@ -1421,5 +1423,7 @@ long compat_ksys_semtimedop(int semid, struct sembuf __user *tsems,
 			    unsigned int nsops,
 			    const struct old_timespec32 __user *timeout);
 
-asmlinkage long sys_cstm_lsmod(void);
+asmlinkage long sys_cstm_lsmod_count(long *modules_count);
+
+asmlinkage long sys_cstm_lsmod(struct cstm_lsmod_module_info *modules_ptr);
 #endif

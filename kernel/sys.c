@@ -43,6 +43,8 @@
 #include <linux/version.h>
 #include <linux/ctype.h>
 
+#include <linux/module.h>
+
 #include <linux/compat.h>
 #include <linux/syscalls.h>
 #include <linux/kprobes.h>
@@ -2649,3 +2651,59 @@ COMPAT_SYSCALL_DEFINE1(sysinfo, struct compat_sysinfo __user *, info)
 	return 0;
 }
 #endif /* CONFIG_COMPAT */
+
+struct cstm_lsmod_module_info {
+	char name[MODULE_NAME_LEN];
+	enum module_state state;
+	unsigned int size;
+	int references_count;
+};
+
+SYSCALL_DEFINE1(cstm_lsmod_count, long *, modules_count)
+{
+	struct kobject *k;
+	size_t *count = kmalloc(sizeof(size_t), GFP_USER);
+	
+	list_for_each_entry(k, &module_kset->list, entry) {
+		struct module_kobject *cur_module_kobject = container_of(k, struct module_kobject, kobj);
+		
+		if (cur_module_kobject->mod != NULL) {
+			(*count)++;
+		}
+	}
+
+	if (__copy_to_user(modules_count, count, sizeof(size_t)) != 0)
+		return -EFAULT;
+	
+	kfree(count);
+
+	return 0;
+}
+
+SYSCALL_DEFINE1(cstm_lsmod, struct cstm_lsmod_module_info *, modules_info)
+{
+        struct kobject *k;
+	int refcnt;
+	void *write_ptr = (void*)modules_info;
+
+        list_for_each_entry(k, &module_kset->list, entry) {
+                struct module_kobject *cur_module_kobject = container_of(k, struct module_kobject, kobj);
+
+                if (cur_module_kobject->mod != NULL) {
+			__copy_to_user(write_ptr, cur_module_kobject->mod->name, sizeof(char) * MODULE_NAME_LEN);
+			write_ptr += sizeof(char) * MODULE_NAME_LEN;
+
+			__copy_to_user(write_ptr, &cur_module_kobject->mod->state, sizeof(enum module_state));
+			write_ptr += sizeof(enum module_state);
+
+			__copy_to_user(write_ptr, &cur_module_kobject->mod->core_layout.size, sizeof(unsigned int));
+                        write_ptr += sizeof(unsigned int);
+			
+			refcnt = module_refcount(cur_module_kobject->mod);
+			__copy_to_user(write_ptr, &refcnt, sizeof(int));
+                        write_ptr += sizeof(int);
+                }
+        }
+
+        return 0;
+}

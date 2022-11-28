@@ -851,12 +851,16 @@ __SYSCALL(__NR_pidfd_open, sys_pidfd_open)
 __SYSCALL(__NR_clone3, sys_clone3)
 #endif
 
-#define __NR_cstm_lsmod 436
+#define __NR_cstm_lsmod_count 436
+__SYSCALL(__NR_cstm_lsmod_count, sys_cstm_lsmod_count)
+
+#define __NR_cstm_lsmod 437
 __SYSCALL(__NR_cstm_lsmod, sys_cstm_lsmod)
 
 #undef __NR_syscalls
 //#define __NR_syscalls 436
-#define __NR_syscalls 437
+//#define __NR_syscalls 437
+#define __NR_syscalls 438
 
 /*
  * 32 bit systems traditionally used different
