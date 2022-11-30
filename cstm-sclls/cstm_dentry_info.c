@@ -3,8 +3,6 @@
 
 #include <linux/syscalls.h>
 
-#define DEV_CLASS_MODE ((umode_t)(S_IRUGO | S_IWUGO))
-
 struct cstm_dentry_info {
 	int is_cant_mount;
 	bool is_mount_point;
@@ -16,9 +14,18 @@ struct cstm_dentry_info {
 	unsigned long reval_time;
 };
 
-SYSCALL_DEFINE1(cstm_dentry_info, struct cstm_dentry_info *, dentry_info)
+SYSCALL_DEFINE3(cstm_dentry_info, char *, dentry_path, size_t, dentry_path_len,
+		pathstruct cstm_dentry_info *, dentry_info)
 {
-	struct dentry *my_dentry = current->fs->pwd.dentry;
+	char *dentry_path_from_user = kmalloc(sizeof(char) * dentry_path_len, GFP_ATOMIC);
+	copy_from_user(dentry_path_from_user, dentry_path, sizeof(char) * dentry_path_len);
+
+	struct dentry *my_dentry;
+    	struct path path;
+    	kern_path(dentry_path_from_user, LOOKUP_FOLLOW, &path);	
+	my_dentry = path.dentry;
+
+	//struct dentry *my_dentry = current->fs->pwd.dentry;
 
 	int is_cant_mount = cant_mount(my_dentry);
 	bool is_mount_point = d_mountpoint(my_dentry);

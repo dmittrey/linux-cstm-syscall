@@ -1428,5 +1428,5 @@ asmlinkage long sys_cstm_lsmod_count(long *modules_count);
 
 asmlinkage long sys_cstm_lsmod(struct cstm_lsmod_module_info *modules_ptr);
 
-asmlinkage long sys_cstm_dentry_info(struct cstm_dentry_info *dentry_info_ptr);
+asmlinkage long sys_cstm_dentry_info(char* dentry_path, size_t dentry_path_len, struct cstm_dentry_info *dentry_info_ptr);
 #endif
