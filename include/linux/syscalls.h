@@ -71,6 +71,7 @@ struct io_uring_params;
 struct clone_args;
 
 struct cstm_lsmod_module_info;
+struct cstm_dentry_info;
 
 #include <linux/types.h>
 #include <linux/aio_abi.h>
@@ -1426,4 +1427,6 @@ long compat_ksys_semtimedop(int semid, struct sembuf __user *tsems,
 asmlinkage long sys_cstm_lsmod_count(long *modules_count);
 
 asmlinkage long sys_cstm_lsmod(struct cstm_lsmod_module_info *modules_ptr);
+
+asmlinkage long sys_cstm_dentry_info(struct cstm_dentry_info *dentry_info_ptr);
 #endif
