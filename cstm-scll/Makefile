@@ -1,1 +1,0 @@
-obj-y := cstm_lsmod.o

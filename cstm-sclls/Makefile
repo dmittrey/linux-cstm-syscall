@@ -1,0 +1,1 @@
+obj-y := cstm_lsmod.o cstm_dentry_info.o
