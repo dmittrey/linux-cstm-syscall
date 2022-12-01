@@ -1,18 +1,70 @@
-Linux kernel
-============
+# Лабораторная работа №2
 
-There are several guides for kernel developers and users. These guides can
-be rendered in a number of formats, like HTML and PDF. Please read
-Documentation/admin-guide/README.rst first.
+Разработать комплекс программ на пользовательском уровне и уровне ярда, который **собирает информацию** на стороне ядра и **передает информацию** на уровень пользователя, и **выводит ее в удобном для чтения человеком виде**.
 
-In order to build the documentation, use ``make htmldocs`` or
-``make pdfdocs``.  The formatted documentation can also be read online at:
+## Ответственность программ
 
-    https://www.kernel.org/doc/html/latest/
+### Программа на уровне пользователя:
 
-There are various text files in the Documentation/ subdirectory,
-several of them using the Restructured Text markup notation.
+1. Получает на вход аргумент(ы) командной строки (не адрес!), **позволяющие идентифицировать из системных таблиц необходимый путь** до целевой структуры.
+2. Осуществляет **передачу на уровень ядра**
+3. **Получает информацию** из данной структуры
+4. **Распечатывает структуру** в стандартный вывод.
 
-Please read the Documentation/process/changes.rst file, as it contains the
-requirements for building and running the kernel, and information about
-the problems which may result by upgrading your kernel.
+### Загружаемый модуль:
+
+1. **Принимает запрос** через указанный в задании интерфейс
+2. **Определяет путь до целевой структуры** по переданному запросу
+3. **Возвращает результат** на уровень пользователя
+
+Интерфейс передачи между программой пользователя и ядром **syscall**
+
+Целевые структуры: **lsmod** и **dentry**
+
+## Инструкция по использованию
+
+### Программы на уровне пользователя:
+
+    Программы распологаются в директории /user-app
+
+1. lsmod
+
+Выводит список загруженных модулей и их характеристики
+
+- Состояние
+- Размер
+- Кол-во использующих приложений
+
+2. dentry_info
+
+Выводит информацию о директории по заданному пути
+
+- Имя
+- Можно ли монтировать
+- Является ли точкой монтирования
+- UID
+- GID
+- Номер устройства
+- Время последнего доступа
+- Время последней модификации
+- Время создания
+
+### Добавленные системные вызовы
+
+1. sys_cstm_lsmod_count(size_t \*count)
+
+Помещает в **_count_** кол-во загруженных модулей ядра
+
+**_Номер системного вызова: 436_**
+
+2. sys_cstm_lsmod(struct cstm_lsmod_module_info \*modules_ptr)
+
+Заполняет буффер **_modules_ptr_** информацией о загруженных модулях
+
+**_Номер системного вызова: 437_**
+
+3. sys_cstm_dentry_info(char *dntry_path, size_t dntry_path_len, struct cstm_dentry_info *dntry_info)
+
+Находит объект dentry по пути переданном в буфере **_dntry_path_** длины **_dntry_path_len_** и помещает необходимую информацию в буффер **_dntry_info_**
+
+**_Номер системного вызова: 438_**
